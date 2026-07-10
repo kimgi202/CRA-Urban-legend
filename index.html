@@ -169,7 +169,7 @@
             font-weight: 500;
         }
 
-        select, textarea, input[type="text"] {
+        select, textarea, input[type="text"], input[type="file"] {
             width: 100%;
             padding: 10px;
             background: #1a1a1a;
@@ -181,32 +181,12 @@
         }
 
         input[type="file"] {
-            width: 100%;
-            padding: 8px;
-            background: #1a1a1a;
             border: 2px dashed #3a3a3a;
-            color: #ddd;
-            border-radius: 4px;
-            font-size: 0.95em;
             cursor: pointer;
         }
 
         input[type="file"]:hover {
             border-color: #ff6b6b;
-        }
-
-        #image-preview {
-            max-width: 100%;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        #image-preview img {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            border-radius: 4px;
-            border: 1px solid #3a3a3a;
         }
 
         textarea {
@@ -218,6 +198,17 @@
             outline: none;
             border-color: #ff6b6b;
             box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+        }
+
+        #image-preview {
+            margin-top: 10px;
+        }
+
+        #image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
         }
 
         .btn-group {
@@ -294,6 +285,15 @@
             flex: 1;
         }
 
+        .post-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
         .post-meta {
             color: #777;
             font-size: 0.85em;
@@ -305,15 +305,6 @@
             font-size: 0.95em;
             margin-top: 8px;
             line-height: 1.4;
-        }
-
-        .post-image {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin: 10px 0;
-            cursor: pointer;
         }
 
         .post-stats {
@@ -473,6 +464,12 @@
             margin-bottom: 10px;
         }
 
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+
         @media (max-width: 768px) {
             .main-layout {
                 grid-template-columns: 1fr;
@@ -562,7 +559,7 @@
                 <div class="form-group">
                     <label>📸 캡처본 (선택)</label>
                     <input type="file" id="image" accept="image/*">
-                    <div id="image-preview" style="margin-top: 10px;"></div>
+                    <div id="image-preview"></div>
                 </div>
                 <div class="btn-group">
                     <button type="submit" class="btn btn-submit">등록</button>
@@ -572,78 +569,37 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    
     <script>
-        // 데이터 관리
-        const DB = {
-            posts: [],
-            load() {
-                const data = localStorage.getItem('cra-posts');
-                this.posts = data ? JSON.parse(data) : this.getDefaultPosts();
-                this.save();
-            },
-            save() {
-                localStorage.setItem('cra-posts', JSON.stringify(this.posts));
-            },
-            addPost(post) {
-                post.id = Date.now();
-                post.date = new Date().toLocaleDateString('ko-KR');
-                post.likes = 0;
-                post.comments = [];
-                this.posts.unshift(post);
-                this.save();
-            },
-            getDefaultPosts() {
-                return [
-                    {
-                        id: 1,
-                        category: 'PM',
-                        title: '월요일 오전 9시, 갑자기 온 이메일...',
-                        content: '주말에 확정된 일정이 월요일 오전 9시에 "변경되었습니다"라는 이메일과 함께 사라졌다.\n그리고 30분 뒤, "왜 아직도 구 일정으로 진행하세요?"라는 지적이 들어왔다.\n이메일 타임스탐프를 확인하니 나는 자고 있던 시간이었다.\n이게 현실인가.',
-                        date: '2026-07-08',
-                        likes: 23,
-                        comments: [
-                            { id: 1, text: '그럼 뭐 어떻게 하라는 건데 ㅋㅋㅋ', date: '2026-07-08' },
-                            { id: 2, text: '나도 이 경험 있음. 진짜 미쳤어.', date: '2026-07-08' }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        category: 'CRC',
-                        title: 'CRC가 줄 비상연락처 vs 실제 연락처',
-                        content: '등록된 비상연락처: 010-0000-0000\n실제 연락처: 알 수 없음\n\nSDV 방문 3일 전에 전화했는데 "저 그 번호 안 써요"라고 했다.\n남은 연락처 없이 나흘 전 방문했고 CRC는 없었다.\nPI는 CRC가 "아마 있을 거"라고 했다.\n\n결론: 그 CRC는 "아마" 우주 어딘가에 있는 것 같다.',
-                        date: '2026-07-07',
-                        likes: 18,
-                        comments: [
-                            { id: 1, text: '비상연락처라는게 비상용이 아니네 ㅋㅋ', date: '2026-07-07' }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        category: 'PI',
-                        title: 'PI: "이건 프로토콜에 없는데요?"',
-                        content: '"이건 프로토콜에 없는데요?" 라고 물었다.\n아, 그 PI는 프로토콜을 읽지 않았단 뜻이군요.\n마리오가 레벨 선택 안 하고 플레이한다더니 이게 그 거구나.',
-                        date: '2026-07-06',
-                        likes: 31,
-                        comments: []
-                    },
-                    {
-                        id: 4,
-                        category: '기타',
-                        title: 'IRB심사위원: "이거 뭐하는 거예요?"',
-                        content: '3개월 전에 승인받은 프로토콜을 들고 간 문서.\nIRB 심사위원이 다시 물었다: "이거 뭐하는 거예요?"\n\n나: 같은 프로토콜이 맞습니다.\nIRB: "어? 그런데 우리가 이거 본 기억이..."\n\n결론: 아무도 기억 못 했다. 모두 유령 같았다.',
-                        date: '2026-07-05',
-                        likes: 15,
-                        comments: [
-                            { id: 1, text: 'IRB 심사위원도 쩌리네 ㅋㅋ', date: '2026-07-05' }
-                        ]
-                    }
-                ];
-            }
+        // Firebase 설정 - 환경변수에서 로드
+        const firebaseConfig = {
+            apiKey: "AIzaSyBcchNIHG0Uwig-sdXogh2WU2mP5o98R7E",
+            authDomain: "cra-urban-legend.firebaseapp.com",
+            databaseURL: "https://cra-urban-legend-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cra-urban-legend",
+            storageBucket: "cra-urban-legend.firebasestorage.app",
+            messagingSenderId: "265847137659",
+            appId: "1:265847137659:web:720e4b9eea06d0271849de"
         };
 
-        let selectedImage = null;
+        // Firebase 초기화
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
 
-        // 이미지 선택 처리
+        // 사용자 ID (익명 유지)
+        let userId = localStorage.getItem('user-id');
+        if (!userId) {
+            userId = 'user-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('user-id', userId);
+        }
+
+        let selectedImage = null;
+        let currentFilter = 'all';
+        let allPosts = [];
+
+        // 이미지 업로드 처리
         document.addEventListener('DOMContentLoaded', function() {
             const imageInput = document.getElementById('image');
             if (imageInput) {
@@ -671,42 +627,71 @@
                     reader.readAsDataURL(file);
                 });
             }
+
+            // 초기 로드
+            loadPosts();
+            setupRealtimeListener();
         });
 
-        DB.load();
-
-        // UI 함수들
-        function openWriteModal() {
-            document.getElementById('write-modal').classList.add('active');
+        // Firebase에서 글 가져오기
+        function loadPosts() {
+            const ref = database.ref('posts');
+            
+            ref.once('value', snapshot => {
+                allPosts = [];
+                snapshot.forEach(child => {
+                    allPosts.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+                
+                allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                renderBoard();
+                updateStats();
+            });
         }
 
-        function closeWriteModal() {
-            document.getElementById('write-modal').classList.remove('active');
-            document.getElementById('write-form').reset();
-            document.getElementById('image-preview').innerHTML = '';
-            selectedImage = null;
+        // 실시간 리스닝 (다른 사용자의 변경사항 실시간 반영)
+        function setupRealtimeListener() {
+            const ref = database.ref('posts');
+            
+            ref.on('child_added', snapshot => {
+                const newPost = {
+                    id: snapshot.key,
+                    ...snapshot.val()
+                };
+                
+                // 중복 확인
+                if (!allPosts.find(p => p.id === newPost.id)) {
+                    allPosts.unshift(newPost);
+                    allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    renderBoard();
+                    updateStats();
+                }
+            });
+
+            ref.on('child_changed', snapshot => {
+                const updatedPost = {
+                    id: snapshot.key,
+                    ...snapshot.val()
+                };
+                
+                const index = allPosts.findIndex(p => p.id === updatedPost.id);
+                if (index !== -1) {
+                    allPosts[index] = updatedPost;
+                    renderBoard();
+                    updateStats();
+                }
+            });
         }
 
-        function submitPost(e) {
-            e.preventDefault();
-            const post = {
-                category: document.getElementById('category').value,
-                title: document.getElementById('title').value,
-                content: document.getElementById('content').value,
-                image: selectedImage
-            };
-            DB.addPost(post);
-            closeWriteModal();
-            selectedImage = null;
-            renderBoard();
-            updateStats();
-        }
-
+        // 화면에 글 목록 렌더링
         function renderBoard() {
             const postList = document.getElementById('post-list');
             const filtered = currentFilter === 'all' 
-                ? DB.posts 
-                : DB.posts.filter(p => p.category === currentFilter);
+                ? allPosts 
+                : allPosts.filter(p => p.category === currentFilter);
 
             if (filtered.length === 0) {
                 postList.innerHTML = `
@@ -720,7 +705,7 @@
             }
 
             postList.innerHTML = filtered.map(post => `
-                <div class="post" onclick="showDetailView(${post.id})">
+                <div class="post" onclick="showDetailView('${post.id}')">
                     <div class="post-header">
                         <div>
                             <span class="category-badge">${post.category}</span>
@@ -729,49 +714,54 @@
                     </div>
                     ${post.image ? `<img src="${post.image}" alt="첨부 이미지" class="post-image">` : ''}
                     <div class="post-preview">${escapeHtml(post.content.substring(0, 100))}...</div>
-                    <div class="post-meta">익명 • ${post.date}</div>
+                    <div class="post-meta">익명 • ${post.created_at}</div>
                     <div class="post-stats">
-                        <span>👍 ${post.likes}</span>
-                        <span>💬 ${post.comments.length}</span>
+                        <span>👍 ${post.likes || 0}</span>
+                        <span>💬 ${Object.keys(post.comments || {}).length}</span>
                     </div>
                 </div>
             `).join('');
         }
 
+        // 글 상세보기
         function showDetailView(postId) {
-            const post = DB.posts.find(p => p.id === postId);
+            const post = allPosts.find(p => p.id === postId);
             if (!post) return;
 
             const detailContent = document.getElementById('detail-content');
+            const commentsHtml = post.comments 
+                ? Object.entries(post.comments).map(([id, comment]) => `
+                    <div class="comment">
+                        <div class="comment-meta">익명 • ${comment.date}</div>
+                        <div class="comment-text">${escapeHtml(comment.text)}</div>
+                    </div>
+                `).join('')
+                : '';
+
             detailContent.innerHTML = `
                 <div class="detail-post">
                     <div class="detail-header">
                         <div>
                             <span class="category-badge">${post.category}</span>
                             <div class="detail-title">${escapeHtml(post.title)}</div>
-                            <div class="post-meta" style="margin-top: 10px;">익명 • ${post.date}</div>
+                            <div class="post-meta" style="margin-top: 10px;">익명 • ${post.created_at}</div>
                         </div>
                     </div>
                     ${post.image ? `<img src="${post.image}" alt="첨부 이미지" style="width: 100%; max-height: 500px; object-fit: cover; border-radius: 4px; margin: 15px 0; border: 1px solid #3a3a3a;">` : ''}
                     <div class="detail-content">${escapeHtml(post.content)}</div>
                     <div class="detail-actions">
-                        <button class="action-btn ${post.liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
-                            👍 <span id="like-count-${post.id}">${post.likes}</span>
+                        <button class="action-btn" onclick="toggleLike('${post.id}')">
+                            👍 <span id="like-count-${post.id}">${post.likes || 0}</span>
                         </button>
-                        <button class="action-btn">💬 댓글 ${post.comments.length}</button>
+                        <button class="action-btn">💬 댓글 ${Object.keys(post.comments || {}).length}</button>
                     </div>
                     <div class="comments-section">
                         <div class="comment-form">
-                            <textarea id="comment-input-${post.id}" placeholder="댓글을 작성하세요..." style="margin-bottom: 10px;"></textarea>
-                            <button class="btn btn-submit" style="width: 100%;" onclick="addComment(${post.id})">댓글 등록</button>
+                            <textarea id="comment-input-${post.id}" placeholder="댓글을 작성하세요..."></textarea>
+                            <button class="btn btn-submit" style="width: 100%;" onclick="addComment('${post.id}')">댓글 등록</button>
                         </div>
                         <div id="comments-${post.id}">
-                            ${post.comments.map(comment => `
-                                <div class="comment">
-                                    <div class="comment-meta">익명 • ${comment.date}</div>
-                                    <div class="comment-text">${escapeHtml(comment.text)}</div>
-                                </div>
-                            `).join('')}
+                            ${commentsHtml}
                         </div>
                     </div>
                 </div>
@@ -781,40 +771,80 @@
             document.getElementById('detail-view').classList.add('active');
         }
 
+        // 화면 전환
         function showBoardView() {
             document.getElementById('board-view').style.display = 'block';
             document.getElementById('detail-view').classList.remove('active');
         }
 
+        // 추천 기능
         function toggleLike(postId) {
-            const post = DB.posts.find(p => p.id === postId);
+            const post = allPosts.find(p => p.id === postId);
             if (!post) return;
-            post.liked = !post.liked;
-            post.likes += post.liked ? 1 : -1;
-            DB.save();
-            document.getElementById(`like-count-${postId}`).textContent = post.likes;
-            updateStats();
+
+            const newLikes = (post.likes || 0) + 1;
+            database.ref(`posts/${postId}`).update({ likes: newLikes });
         }
 
+        // 댓글 추가
         function addComment(postId) {
-            const post = DB.posts.find(p => p.id === postId);
-            if (!post) return;
             const textarea = document.getElementById(`comment-input-${postId}`);
             const text = textarea.value.trim();
+            
             if (!text) return;
 
+            const commentId = Date.now().toString();
             const comment = {
-                id: Date.now(),
                 text: text,
+                user_id: userId,
                 date: new Date().toLocaleDateString('ko-KR')
             };
-            post.comments.push(comment);
-            DB.save();
-            textarea.value = '';
-            showDetailView(postId);
-            updateStats();
+
+            database.ref(`posts/${postId}/comments/${commentId}`).set(comment).then(() => {
+                textarea.value = '';
+                showDetailView(postId);
+            });
         }
 
+        // 글 작성
+        function submitPost(e) {
+            e.preventDefault();
+            
+            const postId = Date.now().toString();
+            const post = {
+                category: document.getElementById('category').value,
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                image: selectedImage || null,
+                likes: 0,
+                created_at: new Date().toLocaleDateString('ko-KR'),
+                user_id: userId,
+                comments: {}
+            };
+
+            database.ref(`posts/${postId}`).set(post).then(() => {
+                closeWriteModal();
+                selectedImage = null;
+                loadPosts();
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('글 작성 실패했습니다.');
+            });
+        }
+
+        // 모달 제어
+        function openWriteModal() {
+            document.getElementById('write-modal').classList.add('active');
+        }
+
+        function closeWriteModal() {
+            document.getElementById('write-modal').classList.remove('active');
+            document.getElementById('write-form').reset();
+            document.getElementById('image-preview').innerHTML = '';
+            selectedImage = null;
+        }
+
+        // HTML 이스케이프
         function escapeHtml(text) {
             const map = {
                 '&': '&amp;',
@@ -826,10 +856,11 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
+        // 통계 업데이트
         function updateStats() {
-            const totalPosts = DB.posts.length;
-            const totalLikes = DB.posts.reduce((sum, p) => sum + p.likes, 0);
-            const totalComments = DB.posts.reduce((sum, p) => sum + p.comments.length, 0);
+            const totalPosts = allPosts.length;
+            const totalLikes = allPosts.reduce((sum, p) => sum + (p.likes || 0), 0);
+            const totalComments = allPosts.reduce((sum, p) => sum + Object.keys(p.comments || {}).length, 0);
 
             document.getElementById('total-posts').textContent = totalPosts;
             document.getElementById('total-likes').textContent = totalLikes;
@@ -838,7 +869,7 @@
             const categories = ['PM', 'CRC', 'PI', 'PH', '기타'];
             const categoryStats = categories.map(cat => ({
                 name: cat === '기타' ? '@ 쩌리들' : cat,
-                count: DB.posts.filter(p => p.category === cat).length
+                count: allPosts.filter(p => p.category === cat).length
             })).sort((a, b) => b.count - a.count);
 
             document.getElementById('category-stats').innerHTML = categoryStats.map(stat => `
@@ -846,19 +877,17 @@
             `).join('');
         }
 
-        // 이벤트 리스너
-        document.querySelectorAll('.cat-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentFilter = this.dataset.category;
-                renderBoard();
+        // 카테고리 필터
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.category;
+                    renderBoard();
+                });
             });
         });
-
-        // 초기화
-        renderBoard();
-        updateStats();
     </script>
 </body>
 </html>
