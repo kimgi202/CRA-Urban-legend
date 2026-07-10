@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRA 괴담 모음 - 익명 커뮤니티</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: #ddd;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #ff6b6b;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .tagline {
+            color: #999;
+            font-size: 0.95em;
+            font-style: italic;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav button {
+            padding: 10px 15px;
+            border: 2px solid #ff6b6b;
+            background: transparent;
+            color: #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+
+        .nav button:hover {
+            background: #ff6b6b;
+            color: #1a1a1a;
+        }
+
+        .nav button.active {
+            background: #ff6b6b;
+            color: #1a1a1a;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .board-section {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #3a3a3a;
+        }
+
+        .sidebar {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #3a3a3a;
+            height: fit-content;
+        }
+
+        .write-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff6b6b;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+
+        .write-btn:hover {
+            background: #ff5252;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid #ff6b6b;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        select, textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            color: #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95em;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 2px dashed #3a3a3a;
+            color: #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #ff6b6b;
+        }
+
+        #image-preview {
+            max-width: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        #image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-submit {
+            background: #ff6b6b;
+            color: #1a1a1a;
+        }
+
+        .btn-submit:hover {
+            background: #ff5252;
+        }
+
+        .btn-cancel {
+            background: #3a3a3a;
+            color: #ddd;
+        }
+
+        .btn-cancel:hover {
+            background: #4a4a4a;
+        }
+
+        .post {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .post:hover {
+            border-color: #ff6b6b;
+            background: #222;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #ff6b6b;
+            color: #1a1a1a;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+
+        .post-title {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+            flex: 1;
+        }
+
+        .post-meta {
+            color: #777;
+            font-size: 0.85em;
+            margin-top: 8px;
+        }
+
+        .post-preview {
+            color: #aaa;
+            font-size: 0.95em;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            color: #777;
+            font-size: 0.85em;
+        }
+
+        .detail-view {
+            display: none;
+        }
+
+        .detail-view.active {
+            display: block;
+        }
+
+        .detail-post {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .detail-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+            flex: 1;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .detail-content {
+            color: #ddd;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-top: 1px solid #3a3a3a;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: #ff6b6b;
+        }
+
+        .action-btn.liked {
+            color: #ff6b6b;
+        }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comment-form {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3a3a;
+        }
+
+        .comment-form textarea {
+            margin-bottom: 10px;
+        }
+
+        .comment {
+            background: #0a0a0a;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .comment-meta {
+            color: #777;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .comment-text {
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        .stats-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .stats-box h3 {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .stat-item {
+            color: #aaa;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .nav {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👻 CRA 괴담 모음</h1>
+            <p class="tagline">익명의 CRA들이 공유하는 현장 일화... (허구입니다)</p>
+        </header>
+
+        <div class="nav">
+            <button class="cat-btn active" data-category="all">전체</button>
+            <button class="cat-btn" data-category="PM">PM 괴담</button>
+            <button class="cat-btn" data-category="CRC">CRC 괴담</button>
+            <button class="cat-btn" data-category="PI">PI 괴담</button>
+            <button class="cat-btn" data-category="PH">PH 괴담</button>
+            <button class="cat-btn" data-category="기타">@ 쩌리들</button>
+        </div>
+
+        <div class="main-layout">
+            <div class="board-section">
+                <div id="board-view">
+                    <div id="post-list"></div>
+                </div>
+                <div id="detail-view" class="detail-view">
+                    <button class="back-btn" onclick="showBoardView()">← 목록으로</button>
+                    <div id="detail-content"></div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <button class="write-btn" onclick="openWriteModal()">✍️ 글 쓰기</button>
+                
+                <div class="stats-box">
+                    <h3>📊 통계</h3>
+                    <div class="stat-item">총 괴담: <span class="stat-value" id="total-posts">0</span></div>
+                    <div class="stat-item">총 추천: <span class="stat-value" id="total-likes">0</span></div>
+                    <div class="stat-item">총 댓글: <span class="stat-value" id="total-comments">0</span></div>
+                </div>
+
+                <div class="stats-box">
+                    <h3>🏆 카테고리별 순위</h3>
+                    <div id="category-stats"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="write-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                ✍️ 괴담 작성
+                <button class="close-btn" onclick="closeWriteModal()">✕</button>
+            </div>
+            <form id="write-form" onsubmit="submitPost(event)">
+                <div class="form-group">
+                    <label>카테고리</label>
+                    <select id="category" required>
+                        <option value="">선택하세요</option>
+                        <option value="PM">PM 괴담</option>
+                        <option value="CRC">CRC 괴담</option>
+                        <option value="PI">PI 괴담</option>
+                        <option value="PH">PH 괴담</option>
+                        <option value="기타">@ 쩌리들</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>제목</label>
+                    <input type="text" id="title" required placeholder="제목을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label>내용</label>
+                    <textarea id="content" required placeholder="괴담을 작성하세요...&#10;&#10;(개인 정보는 공유하지 않아야 합니다)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>📸 캡처본 (선택)</label>
+                    <input type="file" id="image" accept="image/*">
+                    <div id="image-preview" style="margin-top: 10px;"></div>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-submit">등록</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeWriteModal()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 데이터 관리
+        const DB = {
+            posts: [],
+            load() {
+                const data = localStorage.getItem('cra-posts');
+                this.posts = data ? JSON.parse(data) : this.getDefaultPosts();
+                this.save();
+            },
+            save() {
+                localStorage.setItem('cra-posts', JSON.stringify(this.posts));
+            },
+            addPost(post) {
+                post.id = Date.now();
+                post.date = new Date().toLocaleDateString('ko-KR');
+                post.likes = 0;
+                post.comments = [];
+                this.posts.unshift(post);
+                this.save();
+            },
+            getDefaultPosts() {
+                return [
+                    {
+                        id: 1,
+                        category: 'PM',
+                        title: '월요일 오전 9시, 갑자기 온 이메일...',
+                        content: '주말에 확정된 일정이 월요일 오전 9시에 "변경되었습니다"라는 이메일과 함께 사라졌다.\n그리고 30분 뒤, "왜 아직도 구 일정으로 진행하세요?"라는 지적이 들어왔다.\n이메일 타임스탐프를 확인하니 나는 자고 있던 시간이었다.\n이게 현실인가.',
+                        date: '2026-07-08',
+                        likes: 23,
+                        comments: [
+                            { id: 1, text: '그럼 뭐 어떻게 하라는 건데 ㅋㅋㅋ', date: '2026-07-08' },
+                            { id: 2, text: '나도 이 경험 있음. 진짜 미쳤어.', date: '2026-07-08' }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        category: 'CRC',
+                        title: 'CRC가 줄 비상연락처 vs 실제 연락처',
+                        content: '등록된 비상연락처: 010-0000-0000\n실제 연락처: 알 수 없음\n\nSDV 방문 3일 전에 전화했는데 "저 그 번호 안 써요"라고 했다.\n남은 연락처 없이 나흘 전 방문했고 CRC는 없었다.\nPI는 CRC가 "아마 있을 거"라고 했다.\n\n결론: 그 CRC는 "아마" 우주 어딘가에 있는 것 같다.',
+                        date: '2026-07-07',
+                        likes: 18,
+                        comments: [
+                            { id: 1, text: '비상연락처라는게 비상용이 아니네 ㅋㅋ', date: '2026-07-07' }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        category: 'PI',
+                        title: 'PI: "이건 프로토콜에 없는데요?"',
+                        content: '"이건 프로토콜에 없는데요?" 라고 물었다.\n아, 그 PI는 프로토콜을 읽지 않았단 뜻이군요.\n마리오가 레벨 선택 안 하고 플레이한다더니 이게 그 거구나.',
+                        date: '2026-07-06',
+                        likes: 31,
+                        comments: []
+                    },
+                    {
+                        id: 4,
+                        category: '기타',
+                        title: 'IRB심사위원: "이거 뭐하는 거예요?"',
+                        content: '3개월 전에 승인받은 프로토콜을 들고 간 문서.\nIRB 심사위원이 다시 물었다: "이거 뭐하는 거예요?"\n\n나: 같은 프로토콜이 맞습니다.\nIRB: "어? 그런데 우리가 이거 본 기억이..."\n\n결론: 아무도 기억 못 했다. 모두 유령 같았다.',
+                        date: '2026-07-05',
+                        likes: 15,
+                        comments: [
+                            { id: 1, text: 'IRB 심사위원도 쩌리네 ㅋㅋ', date: '2026-07-05' }
+                        ]
+                    }
+                ];
+            }
+        };
+
+        let selectedImage = null;
+
+        // 이미지 선택 처리
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.getElementById('image');
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) {
+                        selectedImage = null;
+                        document.getElementById('image-preview').innerHTML = '';
+                        return;
+                    }
+
+                    if (!file.type.startsWith('image/')) {
+                        alert('이미지 파일만 업로드 가능합니다.');
+                        e.target.value = '';
+                        selectedImage = null;
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        selectedImage = event.target.result;
+                        const preview = document.getElementById('image-preview');
+                        preview.innerHTML = `<img src="${selectedImage}" alt="미리보기">`;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+
+        DB.load();
+
+        // UI 함수들
+        function openWriteModal() {
+            document.getElementById('write-modal').classList.add('active');
+        }
+
+        function closeWriteModal() {
+            document.getElementById('write-modal').classList.remove('active');
+            document.getElementById('write-form').reset();
+            document.getElementById('image-preview').innerHTML = '';
+            selectedImage = null;
+        }
+
+        function submitPost(e) {
+            e.preventDefault();
+            const post = {
+                category: document.getElementById('category').value,
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                image: selectedImage
+            };
+            DB.addPost(post);
+            closeWriteModal();
+            selectedImage = null;
+            renderBoard();
+            updateStats();
+        }
+
+        function renderBoard() {
+            const postList = document.getElementById('post-list');
+            const filtered = currentFilter === 'all' 
+                ? DB.posts 
+                : DB.posts.filter(p => p.category === currentFilter);
+
+            if (filtered.length === 0) {
+                postList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>아직 괴담이 없어요.</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">첫 번째 이야기를 공유해주세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            postList.innerHTML = filtered.map(post => `
+                <div class="post" onclick="showDetailView(${post.id})">
+                    <div class="post-header">
+                        <div>
+                            <span class="category-badge">${post.category}</span>
+                            <span class="post-title">${escapeHtml(post.title)}</span>
+                        </div>
+                    </div>
+                    ${post.image ? `<img src="${post.image}" alt="첨부 이미지" class="post-image">` : ''}
+                    <div class="post-preview">${escapeHtml(post.content.substring(0, 100))}...</div>
+                    <div class="post-meta">익명 • ${post.date}</div>
+                    <div class="post-stats">
+                        <span>👍 ${post.likes}</span>
+                        <span>💬 ${post.comments.length}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showDetailView(postId) {
+            const post = DB.posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const detailContent = document.getElementById('detail-content');
+            detailContent.innerHTML = `
+                <div class="detail-post">
+                    <div class="detail-header">
+                        <div>
+                            <span class="category-badge">${post.category}</span>
+                            <div class="detail-title">${escapeHtml(post.title)}</div>
+                            <div class="post-meta" style="margin-top: 10px;">익명 • ${post.date}</div>
+                        </div>
+                    </div>
+                    ${post.image ? `<img src="${post.image}" alt="첨부 이미지" style="width: 100%; max-height: 500px; object-fit: cover; border-radius: 4px; margin: 15px 0; border: 1px solid #3a3a3a;">` : ''}
+                    <div class="detail-content">${escapeHtml(post.content)}</div>
+                    <div class="detail-actions">
+                        <button class="action-btn ${post.liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                            👍 <span id="like-count-${post.id}">${post.likes}</span>
+                        </button>
+                        <button class="action-btn">💬 댓글 ${post.comments.length}</button>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-form">
+                            <textarea id="comment-input-${post.id}" placeholder="댓글을 작성하세요..." style="margin-bottom: 10px;"></textarea>
+                            <button class="btn btn-submit" style="width: 100%;" onclick="addComment(${post.id})">댓글 등록</button>
+                        </div>
+                        <div id="comments-${post.id}">
+                            ${post.comments.map(comment => `
+                                <div class="comment">
+                                    <div class="comment-meta">익명 • ${comment.date}</div>
+                                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('board-view').style.display = 'none';
+            document.getElementById('detail-view').classList.add('active');
+        }
+
+        function showBoardView() {
+            document.getElementById('board-view').style.display = 'block';
+            document.getElementById('detail-view').classList.remove('active');
+        }
+
+        function toggleLike(postId) {
+            const post = DB.posts.find(p => p.id === postId);
+            if (!post) return;
+            post.liked = !post.liked;
+            post.likes += post.liked ? 1 : -1;
+            DB.save();
+            document.getElementById(`like-count-${postId}`).textContent = post.likes;
+            updateStats();
+        }
+
+        function addComment(postId) {
+            const post = DB.posts.find(p => p.id === postId);
+            if (!post) return;
+            const textarea = document.getElementById(`comment-input-${postId}`);
+            const text = textarea.value.trim();
+            if (!text) return;
+
+            const comment = {
+                id: Date.now(),
+                text: text,
+                date: new Date().toLocaleDateString('ko-KR')
+            };
+            post.comments.push(comment);
+            DB.save();
+            textarea.value = '';
+            showDetailView(postId);
+            updateStats();
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function updateStats() {
+            const totalPosts = DB.posts.length;
+            const totalLikes = DB.posts.reduce((sum, p) => sum + p.likes, 0);
+            const totalComments = DB.posts.reduce((sum, p) => sum + p.comments.length, 0);
+
+            document.getElementById('total-posts').textContent = totalPosts;
+            document.getElementById('total-likes').textContent = totalLikes;
+            document.getElementById('total-comments').textContent = totalComments;
+
+            const categories = ['PM', 'CRC', 'PI', 'PH', '기타'];
+            const categoryStats = categories.map(cat => ({
+                name: cat === '기타' ? '@ 쩌리들' : cat,
+                count: DB.posts.filter(p => p.category === cat).length
+            })).sort((a, b) => b.count - a.count);
+
+            document.getElementById('category-stats').innerHTML = categoryStats.map(stat => `
+                <div class="stat-item">${stat.name}: <span class="stat-value">${stat.count}</span></div>
+            `).join('');
+        }
+
+        // 이벤트 리스너
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.category;
+                renderBoard();
+            });
+        });
+
+        // 초기화
+        renderBoard();
+        updateStats();
+    </script>
+</body>
+</html>
