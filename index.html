@@ -498,7 +498,7 @@
             <button class="cat-btn" data-category="CRC">CRC 괴담</button>
             <button class="cat-btn" data-category="PI">PI 괴담</button>
             <button class="cat-btn" data-category="PH">PH 괴담</button>
-            <button class="cat-btn" data-category="기타">@ 쩌리들</button>
+            <button class="cat-btn" data-category="기타">+@</button>
         </div>
 
         <div class="main-layout">
@@ -545,7 +545,7 @@
                         <option value="CRC">CRC 괴담</option>
                         <option value="PI">PI 괴담</option>
                         <option value="PH">PH 괴담</option>
-                        <option value="기타">@ 쩌리들</option>
+                        <option value="기타">+@</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -571,6 +571,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js"></script>
     
     <script>
         // Firebase 설정 - 환경변수에서 로드
@@ -587,6 +588,7 @@
         // Firebase 초기화
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database(app);
+        const analytics = firebase.analytics(app);
 
         // 사용자 ID (익명 유지)
         let userId = localStorage.getItem('user-id');
@@ -868,7 +870,7 @@
 
             const categories = ['PM', 'CRC', 'PI', 'PH', '기타'];
             const categoryStats = categories.map(cat => ({
-                name: cat === '기타' ? '@ 쩌리들' : cat,
+                name: cat === '기타' ? '+@' : cat,
                 count: allPosts.filter(p => p.category === cat).length
             })).sort((a, b) => b.count - a.count);
 
