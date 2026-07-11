@@ -367,6 +367,22 @@
             color: #ddd;
         }
 
+        .delete-btn {
+            background: none;
+            border: 1px solid #555;
+            color: #888;
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
         .stats-box {
             background: #1a1a1a;
             padding: 15px;
@@ -518,6 +534,18 @@
         let userId = localStorage.getItem('user-id') || ('user-' + Math.random().toString(36).substr(2, 9));
         localStorage.setItem('user-id', userId);
 
+        // 익명 동물 닉네임 생성 (구글 문서 스타일)
+        const ADJECTIVES = ['익명의', '수줍은', '용감한', '졸린', '바쁜', '심각한', '해맑은', '시크한', '분노한', '초조한', '여유로운', '지친', '열정적인', '냉철한', '엉뚱한', '재빠른', '느긋한', '집요한', '해탈한', '짧은'];
+        const ANIMALS = ['악어', '캥거루', '수달', '카피바라', '펭귄', '북극곰', '치타', '나무늘보', '고슴도치', '알파카', '미어캣', '판다', '너구리', '오리너구리', '두더지', '사막여우', '홍학', '문어', '해달', '쿼카'];
+
+        let nickname = localStorage.getItem('user-nickname');
+        if (!nickname) {
+            const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+            const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+            nickname = adj + ' ' + animal;
+            localStorage.setItem('user-nickname', nickname);
+        }
+
         let selectedImage = null;
         let currentFilter = 'all';
         let allPosts = [];
@@ -605,7 +633,7 @@
                     <div class="post-title">${escapeHtml(p.title)}</div>
                     ${p.image ? `<img src="${p.image}" class="post-image" alt="첨부">` : ''}
                     <div class="post-preview">${escapeHtml(p.content.substring(0, 100))}...</div>
-                    <div class="post-meta">익명 • ${p.created_at}</div>
+                    <div class="post-meta">${escapeHtml(p.nickname || '익명')} • ${p.created_at}</div>
                     <div class="post-stats">
                         <span>👍 ${p.likes || 0}</span>
                         <span>💬 ${Object.keys(p.comments || {}).length}</span>
@@ -619,9 +647,12 @@
             if (!post) return;
 
             const commentsHtml = Object.entries(post.comments || {})
-                .map(([_, c]) => `
+                .map(([cid, c]) => `
                     <div class="comment">
-                        <div class="comment-meta">익명 • ${c.date}</div>
+                        <div class="comment-meta">
+                            ${escapeHtml(c.nickname || '익명')} • ${c.date}
+                            ${c.user_id === userId ? `<button class="delete-btn" onclick="deleteComment('${post.id}', '${cid}')">🗑️ 삭제</button>` : ''}
+                        </div>
                         <div class="comment-text">${escapeHtml(c.text)}</div>
                     </div>
                 `).join('');
@@ -629,8 +660,9 @@
             document.getElementById('detail-content').innerHTML = `
                 <div class="detail-post">
                     <span class="category-badge">${post.category}</span>
+                    ${post.user_id === userId ? `<button class="delete-btn" style="float: right;" onclick="deletePost('${post.id}')">🗑️ 글 삭제</button>` : ''}
                     <div class="detail-title">${escapeHtml(post.title)}</div>
-                    <div class="post-meta">익명 • ${post.created_at}</div>
+                    <div class="post-meta">${escapeHtml(post.nickname || '익명')} • ${post.created_at}</div>
                     ${post.image ? `<img src="${post.image}" style="width: 100%; max-height: 500px; margin: 15px 0; border-radius: 4px;">` : ''}
                     <div class="detail-content">${escapeHtml(post.content)}</div>
                     <div class="detail-actions">
@@ -639,7 +671,7 @@
                     </div>
                     <div class="comments-section">
                         <div class="comment-form">
-                            <textarea id="comment-text-${post.id}" placeholder="댓글을 작성하세요..."></textarea>
+                            <textarea id="comment-text-${post.id}" placeholder="댓글을 작성하세요... (${escapeHtml(nickname)}(으)로 등록됨)"></textarea>
                             <button class="btn btn-submit" onclick="addComment('${post.id}')">댓글 등록</button>
                         </div>
                         <div>${commentsHtml}</div>
@@ -649,6 +681,24 @@
 
             document.getElementById('board-view').style.display = 'none';
             document.getElementById('detail-view').classList.add('active');
+        }
+
+        function deletePost(postId) {
+            if (!confirm('정말 이 글을 삭제할까요? 되돌릴 수 없어요!')) return;
+            db.ref(`posts/${postId}`).remove().then(() => {
+                allPosts = allPosts.filter(p => p.id !== postId);
+                showBoardView();
+                renderBoard();
+                updateStats();
+            });
+        }
+
+        function deleteComment(postId, commentId) {
+            if (!confirm('이 댓글을 삭제할까요?')) return;
+            db.ref(`posts/${postId}/comments/${commentId}`).remove().then(() => {
+                loadPosts();
+                setTimeout(() => showDetailView(postId), 300);
+            });
         }
 
         function showBoardView() {
@@ -668,9 +718,12 @@
             const cid = Date.now().toString();
             db.ref(`posts/${postId}/comments/${cid}`).set({
                 text,
+                user_id: userId,
+                nickname: nickname,
                 date: new Date().toLocaleDateString('ko-KR')
             }).then(() => {
-                showDetailView(postId);
+                loadPosts();
+                setTimeout(() => showDetailView(postId), 300);
             });
         }
 
@@ -692,6 +745,8 @@
                 image: selectedImage || null,
                 likes: 0,
                 created_at: new Date().toLocaleDateString('ko-KR'),
+                user_id: userId,
+                nickname: nickname,
                 comments: {}
             }).then(() => {
                 closeWriteModal();
