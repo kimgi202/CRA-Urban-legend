@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRA 괴담 모음 - 익명 커뮤니티</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -19,10 +15,7 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         header {
             text-align: center;
@@ -31,24 +24,10 @@
             padding-bottom: 20px;
         }
 
-        h1 {
-            font-size: 2.5em;
-            color: #ff6b6b;
-            margin-bottom: 5px;
-            font-weight: 900;
-        }
+        h1 { font-size: 2.5em; color: #ff6b6b; margin-bottom: 5px; font-weight: 900; }
+        .tagline { color: #999; font-size: 0.95em; }
 
-        .tagline {
-            color: #999;
-            font-size: 0.95em;
-        }
-
-        .nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+        .nav { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 
         .nav button {
             padding: 10px 15px;
@@ -61,21 +40,26 @@
             font-size: 0.95em;
         }
 
-        .nav button:hover {
-            background: #ff6b6b;
-            color: #1a1a1a;
+        .nav button:hover, .nav button.active { background: #ff6b6b; color: #1a1a1a; }
+
+        .nav button.hot-btn { border-color: #ffa502; }
+        .nav button.hot-btn:hover, .nav button.hot-btn.active { background: #ffa502; color: #1a1a1a; }
+
+        .sort-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+
+        .sort-bar button {
+            padding: 5px 12px;
+            border: 1px solid #3a3a3a;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 12px;
+            font-size: 0.85em;
         }
 
-        .nav button.active {
-            background: #ff6b6b;
-            color: #1a1a1a;
-        }
+        .sort-bar button.active { border-color: #ff6b6b; color: #ff6b6b; font-weight: bold; }
 
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-        }
+        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
 
         .board-section, .sidebar {
             background: #2a2a2a;
@@ -84,9 +68,7 @@
             border: 1px solid #3a3a3a;
         }
 
-        .sidebar {
-            height: fit-content;
-        }
+        .sidebar { height: fit-content; }
 
         .write-btn {
             width: 100%;
@@ -100,26 +82,19 @@
             margin-bottom: 20px;
         }
 
-        .write-btn:hover {
-            background: #ff5252;
-        }
+        .write-btn:hover { background: #ff5252; }
 
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.8);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
 
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
             background: #2a2a2a;
@@ -128,7 +103,7 @@
             max-width: 600px;
             width: 90%;
             border: 2px solid #ff6b6b;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -136,31 +111,29 @@
             font-size: 1.5em;
             font-weight: bold;
             color: #ff6b6b;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            color: #999;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
+        .close-btn { background: none; border: none; color: #999; font-size: 1.5em; cursor: pointer; }
 
-        .form-group {
+        .notice-box {
+            background: #332a1a;
+            border: 1px solid #ffa502;
+            border-radius: 4px;
+            padding: 12px;
             margin-bottom: 15px;
+            font-size: 0.85em;
+            color: #ffcf87;
+            line-height: 1.5;
         }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #aaa;
-            font-weight: 500;
-        }
+        .form-group { margin-bottom: 15px; }
 
-        select, textarea, input[type="text"], input[type="file"] {
+        label { display: block; margin-bottom: 5px; color: #aaa; font-weight: 500; }
+
+        select, textarea, input[type="text"], input[type="password"], input[type="file"] {
             width: 100%;
             padding: 10px;
             background: #1a1a1a;
@@ -171,27 +144,12 @@
             font-size: 0.95em;
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
+        textarea { resize: vertical; min-height: 120px; }
+        input[type="file"] { border: 2px dashed #3a3a3a; }
 
-        input[type="file"] {
-            border: 2px dashed #3a3a3a;
-        }
+        #image-preview img { max-width: 100%; max-height: 300px; margin-top: 10px; border-radius: 4px; }
 
-        #image-preview img {
-            max-width: 100%;
-            max-height: 300px;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
 
         .btn {
             flex: 1;
@@ -202,19 +160,9 @@
             font-weight: bold;
         }
 
-        .btn-submit {
-            background: #ff6b6b;
-            color: #1a1a1a;
-        }
-
-        .btn-submit:hover {
-            background: #ff5252;
-        }
-
-        .btn-cancel {
-            background: #3a3a3a;
-            color: #ddd;
-        }
+        .btn-submit { background: #ff6b6b; color: #1a1a1a; }
+        .btn-submit:hover { background: #ff5252; }
+        .btn-cancel { background: #3a3a3a; color: #ddd; }
 
         .post {
             background: #1a1a1a;
@@ -225,10 +173,17 @@
             cursor: pointer;
         }
 
-        .post:hover {
-            border-color: #ff6b6b;
-            background: #222;
+        .post:hover { border-color: #ff6b6b; background: #222; }
+
+        .post.blinded {
+            cursor: default;
+            color: #666;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.9em;
         }
+
+        .post.blinded:hover { border-color: #3a3a3a; background: #1a1a1a; }
 
         .category-badge {
             display: inline-block;
@@ -238,14 +193,20 @@
             border-radius: 3px;
             font-weight: bold;
             font-size: 0.85em;
-            margin-right: 10px;
+            margin-right: 6px;
         }
 
-        .post-title {
-            color: #fff;
+        .hot-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #ffa502;
+            color: #1a1a1a;
+            border-radius: 3px;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 0.8em;
         }
+
+        .post-title { color: #fff; font-weight: bold; font-size: 1.1em; margin-top: 8px; }
 
         .post-image {
             width: 100%;
@@ -255,33 +216,13 @@
             margin: 10px 0;
         }
 
-        .post-meta {
-            color: #777;
-            font-size: 0.85em;
-            margin-top: 8px;
-        }
+        .post-meta { color: #777; font-size: 0.85em; margin-top: 8px; }
+        .post-preview { color: #aaa; font-size: 0.95em; margin-top: 8px; }
 
-        .post-preview {
-            color: #aaa;
-            font-size: 0.95em;
-            margin-top: 8px;
-        }
+        .post-stats { display: flex; gap: 15px; margin-top: 10px; color: #777; font-size: 0.85em; }
 
-        .post-stats {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-            color: #777;
-            font-size: 0.85em;
-        }
-
-        .detail-view {
-            display: none;
-        }
-
-        .detail-view.active {
-            display: block;
-        }
+        .detail-view { display: none; }
+        .detail-view.active { display: block; }
 
         .detail-post {
             background: #1a1a1a;
@@ -291,12 +232,7 @@
             margin-bottom: 20px;
         }
 
-        .detail-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #fff;
-            margin: 10px 0;
-        }
+        .detail-title { font-size: 1.5em; font-weight: bold; color: #fff; margin: 10px 0; }
 
         .back-btn {
             background: none;
@@ -320,6 +256,7 @@
             padding: 15px 0;
             border-top: 1px solid #3a3a3a;
             border-bottom: 1px solid #3a3a3a;
+            align-items: center;
         }
 
         .action-btn {
@@ -330,13 +267,13 @@
             font-size: 0.9em;
         }
 
-        .action-btn:hover {
-            color: #ff6b6b;
-        }
+        .action-btn:hover { color: #ff6b6b; }
+        .action-btn.liked { color: #ff6b6b; font-weight: bold; }
 
-        .comments-section {
-            margin-top: 20px;
-        }
+        .report-btn { margin-left: auto; color: #666; }
+        .report-btn:hover { color: #ffa502; }
+
+        .comments-section { margin-top: 20px; }
 
         .comment-form {
             background: #0a0a0a;
@@ -345,9 +282,7 @@
             margin-bottom: 20px;
         }
 
-        .comment-form textarea {
-            margin-bottom: 10px;
-        }
+        .comment-form textarea { margin-bottom: 10px; min-height: 70px; }
 
         .comment {
             background: #0a0a0a;
@@ -357,15 +292,8 @@
             border-left: 3px solid #ff6b6b;
         }
 
-        .comment-meta {
-            color: #777;
-            font-size: 0.85em;
-            margin-bottom: 5px;
-        }
-
-        .comment-text {
-            color: #ddd;
-        }
+        .comment-meta { color: #777; font-size: 0.85em; margin-bottom: 5px; }
+        .comment-text { color: #ddd; }
 
         .delete-btn {
             background: none;
@@ -378,10 +306,7 @@
             margin-left: 10px;
         }
 
-        .delete-btn:hover {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
+        .delete-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
 
         .stats-box {
             background: #1a1a1a;
@@ -391,37 +316,25 @@
             border-left: 3px solid #ff6b6b;
         }
 
-        .stats-box h3 {
-            color: #ff6b6b;
-            font-size: 0.9em;
-            margin-bottom: 8px;
-        }
+        .stats-box h3 { color: #ff6b6b; font-size: 0.9em; margin-bottom: 8px; }
+        .stat-item { color: #aaa; font-size: 0.9em; margin-bottom: 5px; }
+        .stat-value { color: #fff; font-weight: bold; }
 
-        .stat-item {
+        .my-nickname {
+            background: #1a1a1a;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 3px solid #ffa502;
+            font-size: 0.9em;
             color: #aaa;
-            font-size: 0.9em;
-            margin-bottom: 5px;
         }
 
-        .stat-value {
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
 
         @media (max-width: 768px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
+            .main-layout { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
         }
     </style>
 </head>
@@ -434,12 +347,19 @@
 
         <div class="nav">
             <button class="cat-btn active" data-category="all">전체</button>
+            <button class="cat-btn hot-btn" data-category="hot">🔥 HOT</button>
             <button class="cat-btn" data-category="PM">PM 괴담</button>
             <button class="cat-btn" data-category="CRC">CRC 괴담</button>
             <button class="cat-btn" data-category="PI">PI 괴담</button>
             <button class="cat-btn" data-category="PH">PH 괴담</button>
             <button class="cat-btn" data-category="IRB">IRB 괴담</button>
             <button class="cat-btn" data-category="기타">+@</button>
+        </div>
+
+        <div class="sort-bar">
+            <button class="sort-btn active" data-sort="latest">최신순</button>
+            <button class="sort-btn" data-sort="likes">추천순</button>
+            <button class="sort-btn" data-sort="views">조회순</button>
         </div>
 
         <div class="main-layout">
@@ -455,10 +375,15 @@
 
             <div class="sidebar">
                 <button class="write-btn" onclick="openWriteModal()">✍️ 글 쓰기</button>
-                
+
+                <div class="my-nickname">
+                    🎭 내 닉네임: <strong id="my-nickname-display" style="color: #ffa502;"></strong>
+                </div>
+
                 <div class="stats-box">
                     <h3>📊 통계</h3>
                     <div class="stat-item">총 괴담: <span class="stat-value" id="total-posts">0</span></div>
+                    <div class="stat-item">🔥 HOT 괴담: <span class="stat-value" id="total-hot">0</span></div>
                     <div class="stat-item">총 추천: <span class="stat-value" id="total-likes">0</span></div>
                     <div class="stat-item">총 댓글: <span class="stat-value" id="total-comments">0</span></div>
                 </div>
@@ -476,6 +401,12 @@
             <div class="modal-header">
                 ✍️ 괴담 작성
                 <button class="close-btn" onclick="closeWriteModal()">✕</button>
+            </div>
+            <div class="notice-box">
+                ⚠️ <strong>작성 전 꼭 확인!</strong><br>
+                병원명, 실명, 스터디명 등 <strong>특정 가능한 정보는 이니셜 처리</strong>해주세요.<br>
+                (예: "S병원 K교수", "국내 모 제약사")<br>
+                허위사실 및 명예훼손성 글은 블라인드/삭제될 수 있습니다.
             </div>
             <form id="write-form">
                 <div class="form-group">
@@ -499,6 +430,10 @@
                     <textarea id="content" required placeholder="괴담을 작성하세요..."></textarea>
                 </div>
                 <div class="form-group">
+                    <label>🔑 글 비밀번호 (선택)</label>
+                    <input type="password" id="post-password" maxlength="10" placeholder="입력하면 다른 기기에서도 이 글을 삭제할 수 있어요">
+                </div>
+                <div class="form-group">
                     <label>📸 캡처본 (선택)</label>
                     <input type="file" id="image" accept="image/*">
                     <div id="image-preview"></div>
@@ -515,7 +450,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
 
     <script>
-        // Firebase 설정
+        // ===== Firebase 설정 =====
         const firebaseConfig = {
             apiKey: "AIzaSyBcchNIHG0Uwig-sdXogh2WU2mP5o98R7E",
             authDomain: "cra-urban-legend.firebaseapp.com",
@@ -526,44 +461,63 @@
             appId: "1:265847137659:web:720e4b9eea06d0271849de"
         };
 
-        // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 전역 변수
+        // ===== 사용자 식별 (익명 유지) =====
         let userId = localStorage.getItem('user-id') || ('user-' + Math.random().toString(36).substr(2, 9));
         localStorage.setItem('user-id', userId);
 
-        // 익명 동물 닉네임 생성 (구글 문서 스타일)
+        // ===== 익명 동물 닉네임 =====
         const ADJECTIVES = ['익명의', '수줍은', '용감한', '졸린', '바쁜', '심각한', '해맑은', '시크한', '분노한', '초조한', '여유로운', '지친', '열정적인', '냉철한', '엉뚱한', '재빠른', '느긋한', '집요한', '해탈한', '짧은'];
         const ANIMALS = ['악어', '캥거루', '수달', '카피바라', '펭귄', '북극곰', '치타', '나무늘보', '고슴도치', '알파카', '미어캣', '판다', '너구리', '오리너구리', '두더지', '사막여우', '홍학', '문어', '해달', '쿼카'];
 
         let nickname = localStorage.getItem('user-nickname');
         if (!nickname) {
-            const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-            const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-            nickname = adj + ' ' + animal;
+            nickname = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)] + ' ' + ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
             localStorage.setItem('user-nickname', nickname);
         }
 
+        // ===== 상수 & 상태 =====
+        const HOT_THRESHOLD = 5;      // 추천 5개 이상 = HOT
+        const BLIND_THRESHOLD = 3;    // 신고 3회 = 블라인드
+
         let selectedImage = null;
         let currentFilter = 'all';
+        let currentSort = 'latest';
         let allPosts = [];
 
-        // 초기화
+        // ===== 비밀번호 해시 (평문 저장 방지) =====
+        async function hashPassword(pw) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw + '::cra-salt'));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ===== 헬퍼 =====
+        function likeCount(p) { return Object.keys(p.likedBy || {}).length + (p.likes_legacy || 0); }
+        function reportCount(p) { return Object.keys(p.reports || {}).length; }
+        function isBlinded(p) { return reportCount(p) >= BLIND_THRESHOLD; }
+        function isHot(p) { return likeCount(p) >= HOT_THRESHOLD; }
+        function getTs(p) { return p.created_ts || parseInt(p.id) || 0; }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // ===== 초기화 =====
         document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('my-nickname-display').textContent = nickname;
             loadPosts();
             setupRealtimeListener();
             setupImageUpload();
-            setupCategoryButtons();
+            setupFilterButtons();
         });
 
         function setupImageUpload() {
-            const imageInput = document.getElementById('image');
-            imageInput.addEventListener('change', function(e) {
+            document.getElementById('image').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     selectedImage = event.target.result;
@@ -573,24 +527,34 @@
             });
         }
 
-        function setupCategoryButtons() {
+        function setupFilterButtons() {
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentFilter = this.dataset.category;
+                    showBoardView();
+                    renderBoard();
+                });
+            });
+
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSort = this.dataset.sort;
                     renderBoard();
                 });
             });
         }
 
+        // ===== 데이터 로드 =====
         function loadPosts() {
             db.ref('posts').once('value', snapshot => {
                 allPosts = [];
                 snapshot.forEach(child => {
                     allPosts.push({ id: child.key, ...child.val() });
                 });
-                allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 renderBoard();
                 updateStats();
             });
@@ -600,7 +564,7 @@
             db.ref('posts').on('child_added', snapshot => {
                 const post = { id: snapshot.key, ...snapshot.val() };
                 if (!allPosts.find(p => p.id === post.id)) {
-                    allPosts.unshift(post);
+                    allPosts.push(post);
                     renderBoard();
                     updateStats();
                 }
@@ -614,37 +578,73 @@
                     updateStats();
                 }
             });
+
+            db.ref('posts').on('child_removed', snapshot => {
+                allPosts = allPosts.filter(p => p.id !== snapshot.key);
+                renderBoard();
+                updateStats();
+            });
         }
 
+        // ===== 렌더링 =====
         function renderBoard() {
             const postList = document.getElementById('post-list');
-            const filtered = currentFilter === 'all' 
-                ? allPosts 
-                : allPosts.filter(p => p.category === currentFilter);
+
+            let filtered;
+            if (currentFilter === 'all') {
+                filtered = [...allPosts];
+            } else if (currentFilter === 'hot') {
+                filtered = allPosts.filter(p => isHot(p) && !isBlinded(p));
+            } else {
+                filtered = allPosts.filter(p => p.category === currentFilter);
+            }
+
+            // 정렬
+            if (currentSort === 'latest') {
+                filtered.sort((a, b) => getTs(b) - getTs(a));
+            } else if (currentSort === 'likes') {
+                filtered.sort((a, b) => likeCount(b) - likeCount(a));
+            } else if (currentSort === 'views') {
+                filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+            }
 
             if (filtered.length === 0) {
                 postList.innerHTML = '<div class="empty-state"><div style="font-size: 2em; margin-bottom: 10px;">📭</div><p>아직 괴담이 없어요.</p></div>';
                 return;
             }
 
-            postList.innerHTML = filtered.map(p => `
-                <div class="post" onclick="showDetailView('${p.id}')">
-                    <span class="category-badge">${p.category}</span>
+            postList.innerHTML = filtered.map(p => {
+                if (isBlinded(p)) {
+                    return `<div class="post blinded">🚫 신고 누적으로 블라인드 처리된 글입니다</div>`;
+                }
+                return `
+                <div class="post" onclick="openPost('${p.id}')">
+                    <span class="category-badge">${p.category}</span>${isHot(p) ? '<span class="hot-badge">🔥 HOT</span>' : ''}
                     <div class="post-title">${escapeHtml(p.title)}</div>
                     ${p.image ? `<img src="${p.image}" class="post-image" alt="첨부">` : ''}
                     <div class="post-preview">${escapeHtml(p.content.substring(0, 100))}...</div>
                     <div class="post-meta">${escapeHtml(p.nickname || '익명')} • ${p.created_at}</div>
                     <div class="post-stats">
-                        <span>👍 ${p.likes || 0}</span>
+                        <span>👍 ${likeCount(p)}</span>
                         <span>💬 ${Object.keys(p.comments || {}).length}</span>
+                        <span>👁️ ${p.views || 0}</span>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+        }
+
+        // ===== 상세보기 (조회수 증가 포함) =====
+        function openPost(postId) {
+            db.ref(`posts/${postId}/views`).set(firebase.database.ServerValue.increment(1));
+            showDetailView(postId);
         }
 
         function showDetailView(postId) {
             const post = allPosts.find(p => p.id === postId);
             if (!post) return;
+            if (isBlinded(post)) { showBoardView(); return; }
+
+            const liked = post.likedBy && post.likedBy[userId];
 
             const commentsHtml = Object.entries(post.comments || {})
                 .map(([cid, c]) => `
@@ -659,15 +659,16 @@
 
             document.getElementById('detail-content').innerHTML = `
                 <div class="detail-post">
-                    <span class="category-badge">${post.category}</span>
-                    ${post.user_id === userId ? `<button class="delete-btn" style="float: right;" onclick="deletePost('${post.id}')">🗑️ 글 삭제</button>` : ''}
+                    <span class="category-badge">${post.category}</span>${isHot(post) ? '<span class="hot-badge">🔥 HOT</span>' : ''}
+                    <button class="delete-btn" style="float: right;" onclick="deletePost('${post.id}')">🗑️ 글 삭제</button>
                     <div class="detail-title">${escapeHtml(post.title)}</div>
-                    <div class="post-meta">${escapeHtml(post.nickname || '익명')} • ${post.created_at}</div>
+                    <div class="post-meta">${escapeHtml(post.nickname || '익명')} • ${post.created_at} • 👁️ ${post.views || 0}</div>
                     ${post.image ? `<img src="${post.image}" style="width: 100%; max-height: 500px; margin: 15px 0; border-radius: 4px;">` : ''}
                     <div class="detail-content">${escapeHtml(post.content)}</div>
                     <div class="detail-actions">
-                        <button class="action-btn" onclick="toggleLike('${post.id}')">👍 ${post.likes || 0}</button>
+                        <button class="action-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">👍 추천 ${likeCount(post)}</button>
                         <button class="action-btn">💬 ${Object.keys(post.comments || {}).length}</button>
+                        <button class="action-btn report-btn" onclick="reportPost('${post.id}')">🚨 신고</button>
                     </div>
                     <div class="comments-section">
                         <div class="comment-form">
@@ -683,34 +684,46 @@
             document.getElementById('detail-view').classList.add('active');
         }
 
-        function deletePost(postId) {
-            if (!confirm('정말 이 글을 삭제할까요? 되돌릴 수 없어요!')) return;
-            db.ref(`posts/${postId}`).remove().then(() => {
-                allPosts = allPosts.filter(p => p.id !== postId);
-                showBoardView();
-                renderBoard();
-                updateStats();
-            });
-        }
-
-        function deleteComment(postId, commentId) {
-            if (!confirm('이 댓글을 삭제할까요?')) return;
-            db.ref(`posts/${postId}/comments/${commentId}`).remove().then(() => {
-                loadPosts();
-                setTimeout(() => showDetailView(postId), 300);
-            });
-        }
-
         function showBoardView() {
             document.getElementById('board-view').style.display = 'block';
             document.getElementById('detail-view').classList.remove('active');
         }
 
+        // ===== 추천 (1인 1추천 토글) =====
         function toggleLike(postId) {
             const post = allPosts.find(p => p.id === postId);
-            db.ref(`posts/${postId}`).update({ likes: (post.likes || 0) + 1 });
+            if (!post) return;
+
+            const ref = db.ref(`posts/${postId}/likedBy/${userId}`);
+            if (post.likedBy && post.likedBy[userId]) {
+                ref.remove().then(() => setTimeout(() => showDetailView(postId), 300));
+            } else {
+                ref.set(true).then(() => setTimeout(() => showDetailView(postId), 300));
+            }
         }
 
+        // ===== 신고 (1인 1신고, 3회 누적 시 블라인드) =====
+        function reportPost(postId) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            if (post.reports && post.reports[userId]) {
+                alert('이미 신고한 글이에요.');
+                return;
+            }
+
+            if (!confirm('이 글을 신고할까요?\n(신고 ' + BLIND_THRESHOLD + '회 누적 시 자동 블라인드 처리됩니다)')) return;
+
+            db.ref(`posts/${postId}/reports/${userId}`).set(true).then(() => {
+                alert('신고가 접수되었습니다.');
+                setTimeout(() => {
+                    const p = allPosts.find(x => x.id === postId);
+                    if (p && isBlinded(p)) showBoardView();
+                }, 300);
+            });
+        }
+
+        // ===== 댓글 =====
         function addComment(postId) {
             const text = document.getElementById(`comment-text-${postId}`).value.trim();
             if (!text) return;
@@ -721,40 +734,83 @@
                 user_id: userId,
                 nickname: nickname,
                 date: new Date().toLocaleDateString('ko-KR')
-            }).then(() => {
-                loadPosts();
-                setTimeout(() => showDetailView(postId), 300);
-            });
+            }).then(() => setTimeout(() => showDetailView(postId), 300));
         }
 
-        function submitPost() {
+        function deleteComment(postId, commentId) {
+            if (!confirm('이 댓글을 삭제할까요?')) return;
+            db.ref(`posts/${postId}/comments/${commentId}`).remove()
+                .then(() => setTimeout(() => showDetailView(postId), 300));
+        }
+
+        // ===== 글 작성 =====
+        async function submitPost() {
             const category = document.getElementById('category').value;
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const password = document.getElementById('post-password').value;
 
             if (!category || !title || !content) {
-                alert('모든 필드를 입력하세요');
+                alert('카테고리, 제목, 내용을 모두 입력하세요');
                 return;
             }
 
             const postId = Date.now().toString();
-            db.ref(`posts/${postId}`).set({
+            const post = {
                 category,
                 title,
                 content,
                 image: selectedImage || null,
-                likes: 0,
+                views: 0,
+                likedBy: {},
+                reports: {},
                 created_at: new Date().toLocaleDateString('ko-KR'),
+                created_ts: Date.now(),
                 user_id: userId,
                 nickname: nickname,
                 comments: {}
-            }).then(() => {
+            };
+
+            if (password) {
+                post.password_hash = await hashPassword(password);
+            }
+
+            db.ref(`posts/${postId}`).set(post).then(() => {
                 closeWriteModal();
                 selectedImage = null;
-                loadPosts();
             });
         }
 
+        // ===== 글 삭제 (본인 or 비밀번호) =====
+        async function deletePost(postId) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            // 1. 본인 글이면 바로 삭제
+            if (post.user_id === userId) {
+                if (!confirm('정말 이 글을 삭제할까요? 되돌릴 수 없어요!')) return;
+                db.ref(`posts/${postId}`).remove().then(() => showBoardView());
+                return;
+            }
+
+            // 2. 비밀번호가 설정된 글이면 비밀번호 확인
+            if (post.password_hash) {
+                const pw = prompt('글 비밀번호를 입력하세요:');
+                if (pw === null) return;
+                const hash = await hashPassword(pw);
+                if (hash === post.password_hash) {
+                    db.ref(`posts/${postId}`).remove().then(() => showBoardView());
+                } else {
+                    alert('비밀번호가 틀렸어요!');
+                }
+                return;
+            }
+
+            // 3. 둘 다 아니면 삭제 불가
+            alert('이 글은 작성자만 삭제할 수 있어요.\n(작성한 브라우저에서 접속하면 삭제 가능)');
+        }
+
+        // ===== 모달 =====
         function openWriteModal() {
             document.getElementById('write-modal').classList.add('active');
         }
@@ -766,20 +822,18 @@
             selectedImage = null;
         }
 
-        function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-
+        // ===== 통계 =====
         function updateStats() {
-            document.getElementById('total-posts').textContent = allPosts.length;
-            document.getElementById('total-likes').textContent = allPosts.reduce((s, p) => s + (p.likes || 0), 0);
-            document.getElementById('total-comments').textContent = allPosts.reduce((s, p) => s + Object.keys(p.comments || {}).length, 0);
+            const visible = allPosts.filter(p => !isBlinded(p));
+            document.getElementById('total-posts').textContent = visible.length;
+            document.getElementById('total-hot').textContent = visible.filter(isHot).length;
+            document.getElementById('total-likes').textContent = visible.reduce((s, p) => s + likeCount(p), 0);
+            document.getElementById('total-comments').textContent = visible.reduce((s, p) => s + Object.keys(p.comments || {}).length, 0);
 
             const cats = ['PM', 'CRC', 'PI', 'PH', 'IRB', '기타'];
             const stats = cats.map(c => ({
                 name: c === '기타' ? '+@' : c,
-                count: allPosts.filter(p => p.category === c).length
+                count: visible.filter(p => p.category === c).length
             })).sort((a, b) => b.count - a.count);
 
             document.getElementById('category-stats').innerHTML = stats.map(s => `
