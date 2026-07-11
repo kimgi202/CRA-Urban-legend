@@ -308,6 +308,72 @@
 
         .delete-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
 
+        .reaction-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
+
+        .reaction-btn {
+            background: #0a0a0a;
+            border: 1px solid #3a3a3a;
+            color: #ccc;
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .reaction-btn:hover { border-color: #ff6b6b; }
+
+        .reaction-btn.reacted {
+            border-color: #ff6b6b;
+            background: #331a1a;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .vote-box {
+            background: #0a0a0a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .vote-option { margin-bottom: 12px; cursor: pointer; }
+
+        .vote-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+            color: #ddd;
+        }
+
+        .vote-bar-bg {
+            background: #2a2a2a;
+            border-radius: 4px;
+            height: 22px;
+            overflow: hidden;
+            border: 1px solid #3a3a3a;
+        }
+
+        .vote-bar-fill {
+            height: 100%;
+            background: #ff6b6b;
+            transition: width 0.3s;
+        }
+
+        .vote-option.voted .vote-bar-fill { background: #ffa502; }
+
+        .vote-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #4a69bd;
+            color: #fff;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-left: 6px;
+        }
+
         .stats-box {
             background: #1a1a1a;
             padding: 15px;
@@ -375,6 +441,7 @@
 
             <div class="sidebar">
                 <button class="write-btn" onclick="openWriteModal()">✍️ 글 쓰기</button>
+                <button class="write-btn" style="background: #4a69bd; color: #fff;" onclick="randomPost()">🎲 랜덤 괴담 뽑기</button>
 
                 <div class="my-nickname">
                     🎭 내 닉네임: <strong id="my-nickname-display" style="color: #ffa502;"></strong>
@@ -386,6 +453,11 @@
                     <div class="stat-item">🔥 HOT 괴담: <span class="stat-value" id="total-hot">0</span></div>
                     <div class="stat-item">총 추천: <span class="stat-value" id="total-likes">0</span></div>
                     <div class="stat-item">총 댓글: <span class="stat-value" id="total-comments">0</span></div>
+                </div>
+
+                <div class="stats-box">
+                    <h3>👑 명예의 전당 (역대 추천 TOP 3)</h3>
+                    <div id="hall-of-fame"></div>
                 </div>
 
                 <div class="stats-box">
@@ -428,6 +500,13 @@
                 <div class="form-group">
                     <label>내용</label>
                     <textarea id="content" required placeholder="괴담을 작성하세요..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="cursor: pointer;"><input type="checkbox" id="vote-toggle" style="width: auto; margin-right: 6px;" onchange="toggleVoteInputs()"> ⚖️ 밸런스 게임 투표 붙이기</label>
+                    <div id="vote-inputs" style="display: none; margin-top: 8px;">
+                        <input type="text" id="vote-a" placeholder="선택지 A (예: 금요일 6시 PM의 급한 요청)" style="margin-bottom: 8px;">
+                        <input type="text" id="vote-b" placeholder="선택지 B (예: 월요일 아침 CRC 잠수)">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>🔑 글 비밀번호 (선택)</label>
@@ -494,6 +573,20 @@
         }
 
         // ===== 헬퍼 =====
+        const REACTIONS = [
+            { key: 'scream', emoji: '😱', label: '소름' },
+            { key: 'lol', emoji: '😂', label: '웃김' },
+            { key: 'angry', emoji: '😤', label: '빡침' },
+            { key: 'skull', emoji: '💀', label: '실화냐' },
+            { key: 'salute', emoji: '🫡', label: '존버' }
+        ];
+
+        function reactionCount(p, key) { return Object.keys((p.reactions && p.reactions[key]) || {}).length; }
+        function reactionSummary(p) {
+            return REACTIONS.filter(r => reactionCount(p, r.key) > 0)
+                .map(r => `<span>${r.emoji} ${reactionCount(p, r.key)}</span>`).join('');
+        }
+
         function likeCount(p) { return Object.keys(p.likedBy || {}).length + (p.likes_legacy || 0); }
         function reportCount(p) { return Object.keys(p.reports || {}).length; }
         function isBlinded(p) { return reportCount(p) >= BLIND_THRESHOLD; }
@@ -619,7 +712,7 @@
                 }
                 return `
                 <div class="post" onclick="openPost('${p.id}')">
-                    <span class="category-badge">${p.category}</span>${isHot(p) ? '<span class="hot-badge">🔥 HOT</span>' : ''}
+                    <span class="category-badge">${p.category}</span>${isHot(p) ? '<span class="hot-badge">🔥 HOT</span>' : ''}${p.vote ? '<span class="vote-badge">⚖️ 투표</span>' : ''}
                     <div class="post-title">${escapeHtml(p.title)}</div>
                     ${p.image ? `<img src="${p.image}" class="post-image" alt="첨부">` : ''}
                     <div class="post-preview">${escapeHtml(p.content.substring(0, 100))}...</div>
@@ -628,6 +721,7 @@
                         <span>👍 ${likeCount(p)}</span>
                         <span>💬 ${Object.keys(p.comments || {}).length}</span>
                         <span>👁️ ${p.views || 0}</span>
+                        ${reactionSummary(p)}
                     </div>
                 </div>`;
             }).join('');
@@ -665,6 +759,14 @@
                     <div class="post-meta">${escapeHtml(post.nickname || '익명')} • ${post.created_at} • 👁️ ${post.views || 0}</div>
                     ${post.image ? `<img src="${post.image}" style="width: 100%; max-height: 500px; margin: 15px 0; border-radius: 4px;">` : ''}
                     <div class="detail-content">${escapeHtml(post.content)}</div>
+                    ${renderVoteBox(post)}
+                    <div class="reaction-bar">
+                        ${REACTIONS.map(r => {
+                            const cnt = reactionCount(post, r.key);
+                            const mine = post.reactions && post.reactions[r.key] && post.reactions[r.key][userId];
+                            return `<button class="reaction-btn ${mine ? 'reacted' : ''}" onclick="toggleReaction('${post.id}', '${r.key}')">${r.emoji} ${r.label}${cnt > 0 ? ' ' + cnt : ''}</button>`;
+                        }).join('')}
+                    </div>
                     <div class="detail-actions">
                         <button class="action-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">👍 추천 ${likeCount(post)}</button>
                         <button class="action-btn">💬 ${Object.keys(post.comments || {}).length}</button>
@@ -743,6 +845,63 @@
                 .then(() => setTimeout(() => showDetailView(postId), 300));
         }
 
+        // ===== 감정 리액션 (1인당 각 리액션 토글) =====
+        function toggleReaction(postId, key) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+            const ref = db.ref(`posts/${postId}/reactions/${key}/${userId}`);
+            const mine = post.reactions && post.reactions[key] && post.reactions[key][userId];
+            (mine ? ref.remove() : ref.set(true)).then(() => setTimeout(() => showDetailView(postId), 300));
+        }
+
+        // ===== 밸런스 게임 =====
+        function renderVoteBox(post) {
+            if (!post.vote) return '';
+            const vA = Object.keys(post.vote.votesA || {}).length;
+            const vB = Object.keys(post.vote.votesB || {}).length;
+            const total = vA + vB;
+            const pA = total ? Math.round(vA / total * 100) : 0;
+            const pB = total ? 100 - pA : 0;
+            const myA = post.vote.votesA && post.vote.votesA[userId];
+            const myB = post.vote.votesB && post.vote.votesB[userId];
+            return `
+                <div class="vote-box">
+                    <div style="color: #ffa502; font-weight: bold; margin-bottom: 10px;">⚖️ 밸런스 게임 (총 ${total}표)</div>
+                    <div class="vote-option ${myA ? 'voted' : ''}" onclick="castVote('${post.id}', 'A')">
+                        <div class="vote-label"><span>${myA ? '✅ ' : ''}${escapeHtml(post.vote.optionA)}</span><span>${pA}% (${vA}표)</span></div>
+                        <div class="vote-bar-bg"><div class="vote-bar-fill" style="width: ${pA}%;"></div></div>
+                    </div>
+                    <div class="vote-option ${myB ? 'voted' : ''}" onclick="castVote('${post.id}', 'B')">
+                        <div class="vote-label"><span>${myB ? '✅ ' : ''}${escapeHtml(post.vote.optionB)}</span><span>${pB}% (${vB}표)</span></div>
+                        <div class="vote-bar-bg"><div class="vote-bar-fill" style="width: ${pB}%;"></div></div>
+                    </div>
+                    <div style="color: #777; font-size: 0.8em;">선택지를 눌러 투표하세요 (변경 가능)</div>
+                </div>
+            `;
+        }
+
+        function castVote(postId, side) {
+            const updates = {};
+            updates[`posts/${postId}/vote/votesA/${userId}`] = side === 'A' ? true : null;
+            updates[`posts/${postId}/vote/votesB/${userId}`] = side === 'B' ? true : null;
+            db.ref().update(updates).then(() => setTimeout(() => showDetailView(postId), 300));
+        }
+
+        // ===== 랜덤 괴담 뽑기 =====
+        function randomPost() {
+            const candidates = allPosts.filter(p => !isBlinded(p));
+            if (candidates.length === 0) { alert('아직 글이 없어요!'); return; }
+            const pick = candidates[Math.floor(Math.random() * candidates.length)];
+            openPost(pick.id);
+            window.scrollTo(0, 0);
+        }
+
+        // ===== 밸런스 게임 입력창 토글 =====
+        function toggleVoteInputs() {
+            document.getElementById('vote-inputs').style.display =
+                document.getElementById('vote-toggle').checked ? 'block' : 'none';
+        }
+
         // ===== 글 작성 =====
         async function submitPost() {
             const category = document.getElementById('category').value;
@@ -770,6 +929,13 @@
                 nickname: nickname,
                 comments: {}
             };
+
+            if (document.getElementById('vote-toggle').checked) {
+                const a = document.getElementById('vote-a').value.trim();
+                const b = document.getElementById('vote-b').value.trim();
+                if (!a || !b) { alert('밸런스 게임 선택지 A, B를 모두 입력하세요!'); return; }
+                post.vote = { optionA: a, optionB: b, votesA: {}, votesB: {} };
+            }
 
             if (password) {
                 post.password_hash = await hashPassword(password);
@@ -819,6 +985,7 @@
             document.getElementById('write-modal').classList.remove('active');
             document.getElementById('write-form').reset();
             document.getElementById('image-preview').innerHTML = '';
+            document.getElementById('vote-inputs').style.display = 'none';
             selectedImage = null;
         }
 
@@ -839,6 +1006,13 @@
             document.getElementById('category-stats').innerHTML = stats.map(s => `
                 <div class="stat-item">${s.name}: <span class="stat-value">${s.count}</span></div>
             `).join('');
+
+            // 명예의 전당 TOP 3
+            const top3 = [...visible].sort((a, b) => likeCount(b) - likeCount(a)).filter(p => likeCount(p) > 0).slice(0, 3);
+            const medals = ['🥇', '🥈', '🥉'];
+            document.getElementById('hall-of-fame').innerHTML = top3.length
+                ? top3.map((p, i) => `<div class="stat-item" style="cursor: pointer;" onclick="openPost('${p.id}')">${medals[i]} ${escapeHtml(p.title.substring(0, 18))}${p.title.length > 18 ? '…' : ''} <span class="stat-value">👍${likeCount(p)}</span></div>`).join('')
+                : '<div class="stat-item">아직 추천받은 글이 없어요</div>';
         }
     </script>
 </body>
