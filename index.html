@@ -3,16 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="👻 임상괴담.zip">
+    <meta property="og:description" content="임상시험 현장의 익명 괴담 저장소. PM, CRC, PI, IRB... 압축 해제 주의 (허구입니다)">
+    <meta property="og:type" content="website">
+    <meta name="description" content="임상시험 현장의 익명 괴담 저장소. 압축 해제 주의.">
     <title>임상괴담.zip - 익명 커뮤니티</title>
     <style>
+        /* ===== 🔥 모닥불 테마 (기본) ===== */
+        :root {
+            --bg: #211d18;
+            --card: #2b2620;
+            --deep: #171310;
+            --border: #403829;
+            --hover: #322c23;
+            --text: #e8e2d9;
+            --accent: #ffa94d;
+            --accent-hover: #ff922b;
+            --accent-soft: #3a2d1c;
+            --hot: #ff7043;
+            --vote: #4a69bd;
+            --notice-bg: #332a1a;
+            --notice-text: #ffcf87;
+        }
+
+        /* ===== 🩸 핏빛 테마 ===== */
+        body[data-theme='blood'] {
+            --bg: #1a1a1a;
+            --card: #2a2a2a;
+            --deep: #0a0a0a;
+            --border: #3a3a3a;
+            --hover: #222222;
+            --text: #dddddd;
+            --accent: #ff6b6b;
+            --accent-hover: #ff5252;
+            --accent-soft: #331a1a;
+            --hot: #ffa502;
+        }
+
+        /* ===== 🔮 미스터리 테마 ===== */
+        body[data-theme='mystery'] {
+            --bg: #17151f;
+            --card: #221f2e;
+            --deep: #100e17;
+            --border: #363048;
+            --hover: #282438;
+            --text: #ddd8e8;
+            --accent: #b197fc;
+            --accent-hover: #9775fa;
+            --accent-soft: #2a2340;
+            --hot: #f783ac;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .theme-bar { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
+
+        .theme-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: #999;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .theme-btn.active { border-color: var(--accent); color: var(--accent); font-weight: bold; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #1a1a1a;
-            color: #ddd;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s, color 0.3s;
         }
 
         .container { max-width: 1000px; margin: 0 auto; }
@@ -20,36 +85,36 @@
         header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 3px solid #ff6b6b;
+            border-bottom: 3px solid var(--accent);
             padding-bottom: 20px;
         }
 
-        h1 { font-size: 2.5em; color: #ff6b6b; margin-bottom: 5px; font-weight: 900; }
+        h1 { font-size: 2.5em; color: var(--accent); margin-bottom: 5px; font-weight: 900; }
         .tagline { color: #999; font-size: 0.95em; }
 
         .nav { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 
         .nav button {
             padding: 10px 15px;
-            border: 2px solid #ff6b6b;
+            border: 2px solid var(--accent);
             background: transparent;
-            color: #ddd;
+            color: var(--text);
             cursor: pointer;
             font-weight: bold;
             border-radius: 4px;
             font-size: 0.95em;
         }
 
-        .nav button:hover, .nav button.active { background: #ff6b6b; color: #1a1a1a; }
+        .nav button:hover, .nav button.active { background: var(--accent); color: var(--bg); }
 
-        .nav button.hot-btn { border-color: #ffa502; }
-        .nav button.hot-btn:hover, .nav button.hot-btn.active { background: #ffa502; color: #1a1a1a; }
+        .nav button.hot-btn { border-color: var(--hot); }
+        .nav button.hot-btn:hover, .nav button.hot-btn.active { background: var(--hot); color: var(--bg); }
 
         .sort-bar { display: flex; gap: 8px; margin-bottom: 20px; }
 
         .sort-bar button {
             padding: 5px 12px;
-            border: 1px solid #3a3a3a;
+            border: 1px solid var(--border);
             background: transparent;
             color: #999;
             cursor: pointer;
@@ -57,15 +122,15 @@
             font-size: 0.85em;
         }
 
-        .sort-bar button.active { border-color: #ff6b6b; color: #ff6b6b; font-weight: bold; }
+        .sort-bar button.active { border-color: var(--accent); color: var(--accent); font-weight: bold; }
 
         .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
 
         .board-section, .sidebar {
-            background: #2a2a2a;
+            background: var(--card);
             border-radius: 8px;
             padding: 20px;
-            border: 1px solid #3a3a3a;
+            border: 1px solid var(--border);
         }
 
         .sidebar { height: fit-content; }
@@ -73,8 +138,8 @@
         .write-btn {
             width: 100%;
             padding: 12px;
-            background: #ff6b6b;
-            color: #1a1a1a;
+            background: var(--accent);
+            color: var(--bg);
             border: none;
             border-radius: 4px;
             font-weight: bold;
@@ -82,7 +147,7 @@
             margin-bottom: 20px;
         }
 
-        .write-btn:hover { background: #ff5252; }
+        .write-btn:hover { background: var(--accent-hover); }
 
         .modal {
             display: none;
@@ -97,12 +162,12 @@
         .modal.active { display: flex; }
 
         .modal-content {
-            background: #2a2a2a;
+            background: var(--card);
             border-radius: 8px;
             padding: 30px;
             max-width: 600px;
             width: 90%;
-            border: 2px solid #ff6b6b;
+            border: 2px solid var(--accent);
             max-height: 85vh;
             overflow-y: auto;
         }
@@ -110,7 +175,7 @@
         .modal-header {
             font-size: 1.5em;
             font-weight: bold;
-            color: #ff6b6b;
+            color: var(--accent);
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
@@ -119,13 +184,13 @@
         .close-btn { background: none; border: none; color: #999; font-size: 1.5em; cursor: pointer; }
 
         .notice-box {
-            background: #332a1a;
-            border: 1px solid #ffa502;
+            background: var(--notice-bg);
+            border: 1px solid var(--hot);
             border-radius: 4px;
             padding: 12px;
             margin-bottom: 15px;
             font-size: 0.85em;
-            color: #ffcf87;
+            color: var(--notice-text);
             line-height: 1.5;
         }
 
@@ -136,16 +201,16 @@
         select, textarea, input[type="text"], input[type="password"], input[type="file"] {
             width: 100%;
             padding: 10px;
-            background: #1a1a1a;
-            border: 1px solid #3a3a3a;
-            color: #ddd;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
             border-radius: 4px;
             font-family: inherit;
             font-size: 0.95em;
         }
 
         textarea { resize: vertical; min-height: 120px; }
-        input[type="file"] { border: 2px dashed #3a3a3a; }
+        input[type="file"] { border: 2px dashed var(--border); }
 
         #image-preview img { max-width: 100%; max-height: 300px; margin-top: 10px; border-radius: 4px; }
 
@@ -160,20 +225,20 @@
             font-weight: bold;
         }
 
-        .btn-submit { background: #ff6b6b; color: #1a1a1a; }
-        .btn-submit:hover { background: #ff5252; }
-        .btn-cancel { background: #3a3a3a; color: #ddd; }
+        .btn-submit { background: var(--accent); color: var(--bg); }
+        .btn-submit:hover { background: var(--accent-hover); }
+        .btn-cancel { background: var(--border); color: var(--text); }
 
         .post {
-            background: #1a1a1a;
-            border: 1px solid #3a3a3a;
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 15px;
             margin-bottom: 15px;
             cursor: pointer;
         }
 
-        .post:hover { border-color: #ff6b6b; background: #222; }
+        .post:hover { border-color: var(--accent); background: var(--hover); }
 
         .post.blinded {
             cursor: default;
@@ -183,13 +248,13 @@
             font-size: 0.9em;
         }
 
-        .post.blinded:hover { border-color: #3a3a3a; background: #1a1a1a; }
+        .post.blinded:hover { border-color: var(--border); background: var(--bg); }
 
         .category-badge {
             display: inline-block;
             padding: 4px 10px;
-            background: #ff6b6b;
-            color: #1a1a1a;
+            background: var(--accent);
+            color: var(--bg);
             border-radius: 3px;
             font-weight: bold;
             font-size: 0.85em;
@@ -199,8 +264,8 @@
         .hot-badge {
             display: inline-block;
             padding: 4px 8px;
-            background: #ffa502;
-            color: #1a1a1a;
+            background: var(--hot);
+            color: var(--bg);
             border-radius: 3px;
             font-weight: bold;
             font-size: 0.8em;
@@ -225,8 +290,8 @@
         .detail-view.active { display: block; }
 
         .detail-post {
-            background: #1a1a1a;
-            border: 1px solid #3a3a3a;
+            background: var(--bg);
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 20px;
             margin-bottom: 20px;
@@ -237,14 +302,14 @@
         .back-btn {
             background: none;
             border: none;
-            color: #ff6b6b;
+            color: var(--accent);
             cursor: pointer;
             font-weight: bold;
             margin-bottom: 15px;
         }
 
         .detail-content {
-            color: #ddd;
+            color: var(--text);
             line-height: 1.6;
             margin: 20px 0;
             white-space: pre-wrap;
@@ -254,8 +319,8 @@
             display: flex;
             gap: 15px;
             padding: 15px 0;
-            border-top: 1px solid #3a3a3a;
-            border-bottom: 1px solid #3a3a3a;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
             align-items: center;
         }
 
@@ -267,16 +332,16 @@
             font-size: 0.9em;
         }
 
-        .action-btn:hover { color: #ff6b6b; }
-        .action-btn.liked { color: #ff6b6b; font-weight: bold; }
+        .action-btn:hover { color: var(--accent); }
+        .action-btn.liked { color: var(--accent); font-weight: bold; }
 
         .report-btn { margin-left: auto; color: #666; }
-        .report-btn:hover { color: #ffa502; }
+        .report-btn:hover { color: var(--hot); }
 
         .comments-section { margin-top: 20px; }
 
         .comment-form {
-            background: #0a0a0a;
+            background: var(--deep);
             padding: 15px;
             border-radius: 4px;
             margin-bottom: 20px;
@@ -285,15 +350,15 @@
         .comment-form textarea { margin-bottom: 10px; min-height: 70px; }
 
         .comment {
-            background: #0a0a0a;
+            background: var(--deep);
             padding: 12px;
             border-radius: 4px;
             margin-bottom: 10px;
-            border-left: 3px solid #ff6b6b;
+            border-left: 3px solid var(--accent);
         }
 
         .comment-meta { color: #777; font-size: 0.85em; margin-bottom: 5px; }
-        .comment-text { color: #ddd; }
+        .comment-text { color: var(--text); }
 
         .delete-btn {
             background: none;
@@ -306,13 +371,13 @@
             margin-left: 10px;
         }
 
-        .delete-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
+        .delete-btn:hover { border-color: var(--accent); color: var(--accent); }
 
         .reaction-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
 
         .reaction-btn {
-            background: #0a0a0a;
-            border: 1px solid #3a3a3a;
+            background: var(--deep);
+            border: 1px solid var(--border);
             color: #ccc;
             padding: 6px 12px;
             border-radius: 16px;
@@ -320,18 +385,18 @@
             font-size: 0.9em;
         }
 
-        .reaction-btn:hover { border-color: #ff6b6b; }
+        .reaction-btn:hover { border-color: var(--accent); }
 
         .reaction-btn.reacted {
-            border-color: #ff6b6b;
-            background: #331a1a;
-            color: #ff6b6b;
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
             font-weight: bold;
         }
 
         .vote-box {
-            background: #0a0a0a;
-            border: 1px solid #3a3a3a;
+            background: var(--deep);
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 15px;
             margin: 15px 0;
@@ -344,29 +409,29 @@
             justify-content: space-between;
             margin-bottom: 4px;
             font-size: 0.95em;
-            color: #ddd;
+            color: var(--text);
         }
 
         .vote-bar-bg {
-            background: #2a2a2a;
+            background: var(--card);
             border-radius: 4px;
             height: 22px;
             overflow: hidden;
-            border: 1px solid #3a3a3a;
+            border: 1px solid var(--border);
         }
 
         .vote-bar-fill {
             height: 100%;
-            background: #ff6b6b;
+            background: var(--accent);
             transition: width 0.3s;
         }
 
-        .vote-option.voted .vote-bar-fill { background: #ffa502; }
+        .vote-option.voted .vote-bar-fill { background: var(--hot); }
 
         .vote-badge {
             display: inline-block;
             padding: 4px 8px;
-            background: #4a69bd;
+            background: var(--vote);
             color: #fff;
             border-radius: 3px;
             font-weight: bold;
@@ -375,23 +440,23 @@
         }
 
         .stats-box {
-            background: #1a1a1a;
+            background: var(--bg);
             padding: 15px;
             border-radius: 4px;
             margin-bottom: 15px;
-            border-left: 3px solid #ff6b6b;
+            border-left: 3px solid var(--accent);
         }
 
-        .stats-box h3 { color: #ff6b6b; font-size: 0.9em; margin-bottom: 8px; }
+        .stats-box h3 { color: var(--accent); font-size: 0.9em; margin-bottom: 8px; }
         .stat-item { color: #aaa; font-size: 0.9em; margin-bottom: 5px; }
         .stat-value { color: #fff; font-weight: bold; }
 
         .my-nickname {
-            background: #1a1a1a;
+            background: var(--bg);
             padding: 12px 15px;
             border-radius: 4px;
             margin-bottom: 15px;
-            border-left: 3px solid #ffa502;
+            border-left: 3px solid var(--hot);
             font-size: 0.9em;
             color: #aaa;
         }
@@ -409,6 +474,11 @@
         <header>
             <h1>👻 임상괴담.zip</h1>
             <p class="tagline">임상시험 현장의 익명 실화(?) 모음... 압축 해제 주의 (허구입니다)</p>
+            <div class="theme-bar">
+                <button class="theme-btn" data-theme="campfire" onclick="setTheme('campfire')">🔥 모닥불</button>
+                <button class="theme-btn" data-theme="blood" onclick="setTheme('blood')">🩸 핏빛</button>
+                <button class="theme-btn" data-theme="mystery" onclick="setTheme('mystery')">🔮 미스터리</button>
+            </div>
         </header>
 
         <div class="nav">
@@ -434,17 +504,17 @@
                     <div id="post-list"></div>
                 </div>
                 <div id="detail-view" class="detail-view">
-                    <button class="back-btn" onclick="showBoardView()">← 목록으로</button>
+                    <button class="back-btn" onclick="showBoardViewAndClearHash()">← 목록으로</button>
                     <div id="detail-content"></div>
                 </div>
             </div>
 
             <div class="sidebar">
                 <button class="write-btn" onclick="openWriteModal()">✍️ 글 쓰기</button>
-                <button class="write-btn" style="background: #4a69bd; color: #fff;" onclick="randomPost()">🎲 랜덤 괴담 뽑기</button>
+                <button class="write-btn" style="background: var(--vote); color: #fff;" onclick="randomPost()">🎲 랜덤 괴담 뽑기</button>
 
                 <div class="my-nickname">
-                    🎭 내 닉네임: <strong id="my-nickname-display" style="color: #ffa502;"></strong>
+                    🎭 내 닉네임: <strong id="my-nickname-display" style="color: var(--hot);"></strong>
                 </div>
 
                 <div class="stats-box">
@@ -598,8 +668,16 @@
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
+        // ===== 테마 시스템 =====
+        function setTheme(t) {
+            document.body.dataset.theme = t;
+            localStorage.setItem('site-theme', t);
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === t));
+        }
+
         // ===== 초기화 =====
         document.addEventListener('DOMContentLoaded', function() {
+            setTheme(localStorage.getItem('site-theme') || 'campfire');
             document.getElementById('my-nickname-display').textContent = nickname;
             loadPosts();
             setupRealtimeListener();
@@ -650,6 +728,14 @@
                 });
                 renderBoard();
                 updateStats();
+
+                // 공유 링크(#post=xxx)로 들어온 경우 해당 글 바로 열기
+                if (location.hash.startsWith('#post=')) {
+                    const targetId = location.hash.replace('#post=', '');
+                    if (allPosts.find(p => p.id === targetId)) {
+                        openPost(targetId);
+                    }
+                }
             });
         }
 
@@ -730,7 +816,13 @@
         // ===== 상세보기 (조회수 증가 포함) =====
         function openPost(postId) {
             db.ref(`posts/${postId}/views`).set(firebase.database.ServerValue.increment(1));
+            history.replaceState(null, '', '#post=' + postId);
             showDetailView(postId);
+        }
+
+        function showBoardViewAndClearHash() {
+            history.replaceState(null, '', location.pathname);
+            showBoardView();
         }
 
         function showDetailView(postId) {
@@ -770,6 +862,7 @@
                     <div class="detail-actions">
                         <button class="action-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">👍 추천 ${likeCount(post)}</button>
                         <button class="action-btn">💬 ${Object.keys(post.comments || {}).length}</button>
+                        <button class="action-btn" onclick="sharePost('${post.id}')">🔗 공유</button>
                         <button class="action-btn report-btn" onclick="reportPost('${post.id}')">🚨 신고</button>
                     </div>
                     <div class="comments-section">
@@ -866,7 +959,7 @@
             const myB = post.vote.votesB && post.vote.votesB[userId];
             return `
                 <div class="vote-box">
-                    <div style="color: #ffa502; font-weight: bold; margin-bottom: 10px;">⚖️ 밸런스 게임 (총 ${total}표)</div>
+                    <div style="color: var(--hot); font-weight: bold; margin-bottom: 10px;">⚖️ 밸런스 게임 (총 ${total}표)</div>
                     <div class="vote-option ${myA ? 'voted' : ''}" onclick="castVote('${post.id}', 'A')">
                         <div class="vote-label"><span>${myA ? '✅ ' : ''}${escapeHtml(post.vote.optionA)}</span><span>${pA}% (${vA}표)</span></div>
                         <div class="vote-bar-bg"><div class="vote-bar-fill" style="width: ${pA}%;"></div></div>
@@ -885,6 +978,16 @@
             updates[`posts/${postId}/vote/votesA/${userId}`] = side === 'A' ? true : null;
             updates[`posts/${postId}/vote/votesB/${userId}`] = side === 'B' ? true : null;
             db.ref().update(updates).then(() => setTimeout(() => showDetailView(postId), 300));
+        }
+
+        // ===== 개별 글 링크 공유 =====
+        function sharePost(postId) {
+            const url = location.origin + location.pathname + '#post=' + postId;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('📋 이 글의 링크가 복사됐어요!\n카톡에 붙여넣기 하세요 ㅋㅋ');
+            }).catch(() => {
+                prompt('이 링크를 복사하세요:', url);
+            });
         }
 
         // ===== 랜덤 괴담 뽑기 =====
